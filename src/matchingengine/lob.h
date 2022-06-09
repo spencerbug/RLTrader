@@ -6,7 +6,7 @@
 #define _LOB_H
 
 #include <unordered_map>
-#include <set>
+#include <map>
 #include <list>
 #include <vector>
 #include <limits>
@@ -14,30 +14,27 @@
 using namespace std;
 typedef enum {SELLSIDE, BUYSIDE} Side;
 
-typedef struct Order {
-    uint64_t orderId; //keyed
+class Order {
+public:
+    const uint64_t orderId;
     Side side;
     uint64_t qty;
     uint64_t limit;
     uint64_t entryTime;
     uint64_t eventTime;
-    set<Limit>::iterator parentLimit;
-    Order(uint64_t orderId, Side side, uint64_t qty, uint64_t entryTime, uint64_t eventTime, set<Limit>::iterator parentLimit){
-        this->orderId=orderId;
-        this->side=side;
-        this->entryTime=entryTime;
-        this->eventTime=eventTime;
-        this->parentLimit=parentLimit;
-    }
+    map<uint64_t, Limit>::iterator parentLimit;
+    Order(uint64_t orderId, Side side, uint64_t qty, uint64_t entryTime, uint64_t eventTime, map<uint64_t, Limit>::iterator parentLimit):
+    orderId(orderId), side(side), qty(qty), limit(limit), entryTime(entryTime), eventTime(eventTime), parentLimit(parentLimit)
+    {}
 };
 
 class Limit {
     public:
-    const uint64_t limitPrice; //keyed
+    // const uint64_t limitPrice;  //limitPrice is iterator->first (map key)
     const Side side;
     uint64_t totalVolume; //sum(order.qty*price)
     list<Order> orders;
-    Limit(uint64_t limitPrice, Side side): limitPrice(limitPrice), side(side) {};
+    Limit(Side side): side(side) {};
     const size_t size(){
         return this->orders.size();
     }
@@ -46,12 +43,11 @@ class Limit {
 //RBTree and hashmap combo for limits
 
 class Book {
-    bool minFirst = [](Limit& a, Limit& b) { return a.limitPrice < b.limitPrice; };
-    bool maxFirst = [](Limit& a, Limit& b) { return a.limitPrice > b.limitPrice; };
-    set<Limit, decltype(maxFirst)> bidLimits;
-    set<Limit, decltype(minFirst)> askLimits;
-    set<Limit>::iterator minAsk, maxBid;
-    unordered_map<uint64_t, set<Limit>::iterator> limitCache; //maps limit price to Limit
+    map<uint64_t, Limit, greater<uint64_t>> bidLimits;
+    map<uint64_t, Limit, less<uint64_t>> askLimits;
+
+    map<uint64_t, Limit>::iterator minAsk, maxBid;
+    unordered_map<uint64_t, map<uint64_t, Limit>::iterator> limitCache; //maps limit price to Limit
     unordered_map<uint64_t, list<Order>::iterator> orderCache; //maps orderId to Order
     uint64_t _orderId;
 public:

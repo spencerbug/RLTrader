@@ -26,8 +26,8 @@ uint64_t Book::add(Side side, uint64_t qty, uint64_t limitPrice, uint64_t time)
 {
     auto evt_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
     _orderId++;
-    unordered_map<uint64_t,set<Limit>::iterator>::const_iterator it = limitCache.find(limitPrice);
-    set<Limit>::iterator limitit;
+    unordered_map<uint64_t, map<uint64_t, Limit>::iterator>::const_iterator it = limitCache.find(limitPrice);
+    map<uint64_t, Limit>::iterator limitit;
     list<Order>::iterator orderit;
     bool s;
 
@@ -37,20 +37,20 @@ uint64_t Book::add(Side side, uint64_t qty, uint64_t limitPrice, uint64_t time)
                 auto[limitit,s]=bidLimits.emplace(limitPrice, side);
                 maxBid=limitit;
             } else {
-                if (limitPrice > maxBid->limitPrice){
+                if (limitPrice > maxBid->first){
                     limitit=bidLimits.emplace_hint(bidLimits.begin(), limitPrice, side); //O(1) for above max bid
                     maxBid=limitit;
                 } else {
-                    auto[limitit,s]=bidLimits.emplace(limitPrice,side); //O(logn) if 
+                    auto[limitit,s]=bidLimits.emplace(limitPrice, side); //O(logn) if 
                 }
             }
         }
         else { //sell side
             if (askLimits.empty()){
-                auto[limitit,s]=askLimits.emplace(limitPrice,side);
+                auto[limitit,s]=askLimits.emplace(limitPrice, side);
                 minAsk=limitit;
             } else {
-                if (limitPrice < minAsk->limitPrice){
+                if (limitPrice < minAsk->first){
                     limitit=askLimits.emplace_hint(askLimits.begin(), limitPrice, side);
                     minAsk=limitit;
                 } else {
@@ -62,8 +62,9 @@ uint64_t Book::add(Side side, uint64_t qty, uint64_t limitPrice, uint64_t time)
     } else {
         limitit = it->second;
     }
-    Limit *limit = const_cast<Limit *>(&(*limitit));
-    orderit=limit->orders.emplace(limit->orders.end(),_orderId, side, qty, time, evt_time, limitit);
+    Limit& limit=limitit->second;
+    limit.totalVolume+=qty * limitit->first;
+    orderit=limit.orders.emplace(limit.orders.end(), _orderId, side, qty, time, evt_time, limitit);
     orderCache[_orderId] = orderit; 
 
     return _orderId;
@@ -76,26 +77,25 @@ void Book::cancel(uint64_t orderId){
         throw runtime_error("Invalid orderId");
     }
     list<Order>::iterator orderit = it->second;
-    set<Limit>::iterator limitit=orderit->parentLimit;
-    //const_cast is hacky and could lead to unsafe behavior if you modify the set comparison variables
-    Limit *limit = const_cast<Limit *>(&(*limitit));
+    map<uint64_t, Limit>::iterator limitit=orderit->parentLimit;
+    Limit& limit=limitit->second;
 
 
-    if (limit->size() == 0){
+    if (limit.size() == 0){
         throw runtime_error("Empty order list");
     }
 
-    limit->orders.erase(orderit);
-    limit->totalVolume-=orderit->qty * limit->limitPrice;
+    limit.orders.erase(orderit);
+    limit.totalVolume-=orderit->qty * limitit->first;
     
 
     //if this is the last order on a limit, we want to delete it
     //to do this efficiently, if it's outside the minAsk maxBid limits,
     //then we can assign minAsk/maxBid to the next best limit
     // then/otherwise we will not delete here, we will delete in the limit_gc function
-    if (limit->side == BUYSIDE && limit->limitPrice == minAsk->limitPrice){
+    if (limit.side == BUYSIDE && limitit->first == minAsk->first){
         minAsk++;
-    } else if (limit->side == SELLSIDE && limit->limitPrice == maxBid->limitPrice) {
+    } else if (limit.side == SELLSIDE && limitit->first == maxBid->first) {
         maxBid++;
     }
 
@@ -104,10 +104,18 @@ void Book::cancel(uint64_t orderId){
 
 //this needs to be called periodically
 //remove_if for const iterators is impossible with the current c++20 standard.
-https://stackoverflow.com/questions/24263259/c-stdseterase-with-stdremove-if
+//https://stackoverflow.com/questions/24263259/c-stdseterase-with-stdremove-if
 void Book::limit_gc(){
-    bidLimits.erase(remove_if(bidLimits.begin(), bidLimits.end(), [](Limit &limit){ return limit.size()==0; }));
-    askLimits.erase(remove_if(askLimits.begin(), bidLimits.end(), [](Limit &limit){ return limit.size()==0; }));
+    for (auto it = bidLimits.begin(); it != bidLimits.end(); ){
+        if ( it->second.size()==0  ){
+            it=bidLimits.erase(it);
+        } else ++it;
+    }
+    for (auto it = askLimits.begin(); it != askLimits.end(); ){
+        if ( it->second.size()==0  ){
+            it=askLimits.erase(it);
+        } else ++it;
+    }
 }
 
 //executes one trade. return the number of trades executes
