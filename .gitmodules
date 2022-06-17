@@ -1,0 +1,3 @@
+[submodule "exchange-core"]
+	path = exchange-core
+	url = https://github.com/spencerbug/exchange-core.git
