@@ -18,3 +18,8 @@ There may be hundreds or thousands of TUs trading on the exchange and training, 
 Hyperparameters will be calculated using population based gradient descent. The observations haven't been decided on yet, but it may involve an embedding layer as well. We can also use population data to eliminate unneeded observation spaces.
 
 Traders will be given varying levels of market share, to account for different levels of control over the market
+
+# Requirements
+
+* Java 1.8
+* Python 3.8
