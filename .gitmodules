@@ -1,3 +1,6 @@
 [submodule "exchange-core"]
 	path = exchange-core
 	url = https://github.com/spencerbug/exchange-core.git
+[submodule "exchange-gateway-rest"]
+	path = exchange-gateway-rest
+	url = git@github.com:spencerbug/exchange-gateway-rest.git
