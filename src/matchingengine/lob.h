@@ -10,29 +10,37 @@
 #include <list>
 #include <vector>
 #include <limits>
+#include <string>
 
 using namespace std;
 typedef enum {SELLSIDE, BUYSIDE} Side;
 
+typedef uint64_t price_t;
+typedef uint64_t orderId_t;
+typedef string userId_t;
+typedef uint64_t nano_t;
+
+
 class Order {
 public:
-    const uint64_t orderId;
+    const orderId_t orderId;
+    const userId_t userId;
     Side side;
     uint64_t qty;
-    uint64_t limit;
     uint64_t entryTime;
     uint64_t eventTime;
-    map<uint64_t, Limit>::iterator parentLimit;
-    Order(uint64_t orderId, Side side, uint64_t qty, uint64_t entryTime, uint64_t eventTime, map<uint64_t, Limit>::iterator parentLimit):
-    orderId(orderId), side(side), qty(qty), limit(limit), entryTime(entryTime), eventTime(eventTime), parentLimit(parentLimit)
-    {}
+    map<price_t, Limit>::iterator parentLimit;
+    Order(userId_t userId, uint64_t orderId, Side side, uint64_t qty, 
+        uint64_t entryTime, uint64_t eventTime, map<uint64_t, Limit>::iterator parentLimit):
+        userId(userId), orderId(orderId), side(side), qty(qty), entryTime(entryTime), 
+        eventTime(eventTime), parentLimit(parentLimit) {}
 };
 
 class Limit {
     public:
     // const uint64_t limitPrice;  //limitPrice is iterator->first (map key)
     const Side side;
-    uint64_t totalVolume; //sum(order.qty*price)
+    price_t totalVolume; //sum(order.qty*price)
     list<Order> orders;
     Limit(Side side): side(side) {};
     const size_t size(){
@@ -43,36 +51,41 @@ class Limit {
 //RBTree and hashmap combo for limits
 
 class Book {
-    map<uint64_t, Limit, greater<uint64_t>> bidLimits;
-    map<uint64_t, Limit, less<uint64_t>> askLimits;
+    map<price_t, Limit, greater<price_t>> bidLimits; // max first
+    map<price_t, Limit, less<price_t>> askLimits; //min first
 
-    map<uint64_t, Limit>::iterator minAsk, maxBid;
-    unordered_map<uint64_t, map<uint64_t, Limit>::iterator> limitCache; //maps limit price to Limit
-    unordered_map<uint64_t, list<Order>::iterator> orderCache; //maps orderId to Order
-    uint64_t _orderId;
+    map<price_t, Limit>::iterator minAsk, maxBid;
+    unordered_map<price_t, map<uint64_t, Limit>::iterator> limitCache; //maps limit price to Limit
+    unordered_map<orderId_t, list<Order>::iterator> orderCache; //maps orderId to Order
+    orderId_t _orderId;
 public:
 
     //places order at the end of a list of orders to be execute at a limit price
     //O(log M) for first order to add at a limit, O(1) for others. Using a binary tree and a hash(of limit) table for that
-    uint64_t add(Side side, uint64_t qty, uint64_t limit, uint64_t time);
+    orderId_t add(userId_t userId, Side side, uint64_t qty, price_t limit, uint64_t time);
 
     //removes an arbitrary order
-    void cancel(uint64_t orderId); // O(1) h
+    void cancel(orderId_t orderId); // O(1) h
 
     //removes an order from inside the book. "inside" is oldest buy at highest price and oldest sell at lowest price
     long execute(); //performs optimal execution between a buy and sell side
 
     // gets the volume at a given limit
-    uint64_t getVolumeAtLimit(Side side, uint64_t limit); //O(1)
+    price_t getVolumeAtLimit(Side side, price_t limit); //O(1)
 
    //prints the volumes at each limit price (sparse)
-    vector<vector<uint64_t>>& get_book_volumes();
+    vector<vector<price_t>>& get_book_volumes();
+
+    // gets the optimal limit for a given order
+    optional<map<uint64_t, Limit>::iterator> getMatchLimit(list<Order>::iterator order); // O(1)
+
+    bool can_match();
 
     // gets the optimal order for a given limit
-    Order *getBestBidOrOffer(uint64_t limit, Side side); // O(1)
+    optional<list<Order>::iterator> getBidOrOffer(map<uint64_t, Limit>::iterator, Side side); // O(1)
 
     // delete empty limits in the buy and sell trees
-    void limit_gc(); 
+    void limit_gc(bool outside_only); 
 
 };
 

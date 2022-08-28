@@ -1,3 +1,5 @@
+# this tests the Python matching engine
+
 import pytest
 from math import inf
 from exchange.MatchingEngine import OrderBook

@@ -1,0 +1,39 @@
+version: '3.2'
+services:
+  app:
+    image: 'exchange-gateway-rest:latest'
+    build:
+      context: .
+    container_name: app
+    depends_on:
+      - mydb
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://mydb:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    networks:
+      - exchange-network
+    ports:
+      - "127.0.0.1:8080:8080"
+  mydb:
+    container_name: mydb
+    image: postgres
+    mem_limit: 2048MB
+    mem_reservation: 1G
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - db-data:/var/lib/postgres/data
+    ports:
+      - "5432:5432"
+    networks:
+      - exchange-network
+networks:
+  exchange-network:
+    driver: bridge
+
+volumes:
+  db-data:
+

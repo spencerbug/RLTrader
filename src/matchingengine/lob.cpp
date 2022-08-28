@@ -22,7 +22,7 @@ Book::Book(){
     _orderId=0;
 }
 
-uint64_t Book::add(Side side, uint64_t qty, uint64_t limitPrice, uint64_t time)
+orderId_t Book::add(userId_t userId, Side side, uint64_t qty, price_t limitPrice, uint64_t time)
 {
     auto evt_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
     _orderId++;
@@ -64,7 +64,7 @@ uint64_t Book::add(Side side, uint64_t qty, uint64_t limitPrice, uint64_t time)
     }
     Limit& limit=limitit->second;
     limit.totalVolume+=qty * limitit->first;
-    orderit=limit.orders.emplace(limit.orders.end(), _orderId, side, qty, time, evt_time, limitit);
+    orderit=limit.orders.emplace(limit.orders.end(), userId, _orderId, side, qty, time, evt_time, limitit);
     orderCache[_orderId] = orderit; 
 
     return _orderId;
@@ -105,23 +105,94 @@ void Book::cancel(uint64_t orderId){
 //this needs to be called periodically
 //remove_if for const iterators is impossible with the current c++20 standard.
 //https://stackoverflow.com/questions/24263259/c-stdseterase-with-stdremove-if
-void Book::limit_gc(){
-    for (auto it = bidLimits.begin(); it != bidLimits.end(); ){
-        if ( it->second.size()==0  ){
-            it=bidLimits.erase(it);
-        } else ++it;
-    }
-    for (auto it = askLimits.begin(); it != askLimits.end(); ){
-        if ( it->second.size()==0  ){
-            it=askLimits.erase(it);
-        } else ++it;
+// this function deletes limits with empty quantities.
+void Book::limit_gc(bool outside_only){
+    if (outside_only){
+        for (auto it = bidLimits.begin(); it != bidLimits.end(); ){
+            if ( it->second.size()==0  ){
+                it=bidLimits.erase(it);
+            } else {
+                break;
+            }
+            it++;
+        }
+        for (auto it = bidLimits.rbegin(); it != bidLimits.rend(); ){
+            if ( it->second.size()==0  ){
+                advance(it,1);
+                bidLimits.erase(it.base());
+            } else {
+                break;
+            }
+            it++;
+        }
+        for (auto it = askLimits.begin(); it != askLimits.end(); ){
+            if ( it->second.size()==0  ){
+                it=askLimits.erase(it);
+            } else {
+                break;
+            }
+            it++;
+        }
+        for (auto it = askLimits.rbegin(); it != askLimits.rend(); ){
+            if ( it->second.size()==0  ){
+                advance(it,1);
+                askLimits.erase(it.base());
+            } else {
+                break;
+            }
+            it++;
+        }    
+    } else {
+        for (auto it = bidLimits.begin(); it != bidLimits.end(); ){
+            if ( it->second.size()==0  ){
+                it=bidLimits.erase(it);
+            } else ++it;
+        }
+        for (auto it = askLimits.begin(); it != askLimits.end(); ){
+            if ( it->second.size()==0  ){
+                it=askLimits.erase(it);
+            } else ++it;
+        }
     }
 }
 
+optional<map<uint64_t, Limit>::iterator> Book::getMatchLimit(list<Order>::iterator order){
+    if (order->side == BUYSIDE){
+        //if you're buying above the minAsk
+        if (order->parentLimit->first >= minAsk->first){
+            return minAsk;
+        } else {
+            return nullopt;
+        }
+    } else {
+        //if you're selling below maxBid
+        if (order->parentLimit->first <= maxBid->first){
+            return maxBid;
+        } else {
+            return nullopt;
+        }
+    }
+}
+
+//checks if there are any available matches in the lob.
+bool Book::can_match(){
+    return minAsk->first <= maxBid->first;
+}
+
 //executes one trade. return the number of trades executes
-// take the maxbuy and the minask, and work our way backwards
-
+// take the maxbuy and the minask, and work our way backward
 long Book::execute(){
-
+    if (can_match){
+        //offerer is first come first serve (time), which is matched to a group of offerees until the offerer's qty is used up
+        list<Order>::iterator firstMinAsk = minAsk->second.orders.begin();
+        list<Order>::iterator firstMaxBid = maxBid->second.orders.begin();
+        //the first buyer or seller we match is the earliest of either the minAsk or maxBid
+        Side whosfirst = firstMaxBid->entryTime < firstMinAsk->entryTime ? BUYSIDE : SELLSIDE;
+        if (whosfirst==BUYSIDE){
+            list<Order>::iterator offerer=firstMinAsk;
+            optional<map<uint64_t, Limit>::iterator> offereeLimit = getMatchLimit(offerer);
+            
+        }
+    }
     return 0;
 }

@@ -9,3 +9,6 @@ def get_git_root(path):
     return git_root
 
 sys.path.insert(0, os.path.join(get_git_root("."),"src"))
+
+# @pytest.fixture
+# def exchange_server():
