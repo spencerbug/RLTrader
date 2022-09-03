@@ -1,0 +1,591 @@
+{
+	"info": {
+		"_postman_id": "13bb0d09-5ba6-43f2-86ac-c4643b287d3a",
+		"name": "exchange-gateway-rest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2937601"
+	},
+	"item": [
+		{
+			"name": "add user Exchange",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"uid\":1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/syncAdminApi/v1/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncAdminApi",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add user Alice",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"uid\":2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/syncAdminApi/v1/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncAdminApi",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add user Bob",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"uid\":3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/syncAdminApi/v1/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncAdminApi",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add asset usd",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"assetCode\": \"USD\",\n    \"assetId\": 1,\n    \"scale\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/syncAdminApi/v1/assets",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncAdminApi",
+						"v1",
+						"assets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add asset btc",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"assetCode\": \"BTC\",\n    \"assetId\": 2,\n    \"scale\": 8\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/syncAdminApi/v1/assets",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncAdminApi",
+						"v1",
+						"assets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Adjust balance Exchange",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"transactionId\":1,\n    \"amount\":1000,\n    \"currency\":\"BTC\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/syncAdminApi/v1/users/1/accounts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncAdminApi",
+						"v1",
+						"users",
+						"1",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Adjust balance Alice",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"transactionId\":2,\n    \"amount\":2000000,\n    \"currency\":\"USD\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/syncAdminApi/v1/users/2/accounts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncAdminApi",
+						"v1",
+						"users",
+						"2",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Adjust balance Bob",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"transactionId\":3,\n    \"amount\":10000,\n    \"currency\":\"USD\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/syncAdminApi/v1/users/3/accounts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncAdminApi",
+						"v1",
+						"users",
+						"3",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add symbol",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"symbolCode\":\"BTCUSD\",\n    \"symbolId\":3,\n    \"symbolType\":0,\n    \"baseAsset\":\"BTC\",\n    \"quoteCurrency\":\"USD\",\n    \"lotSize\":0.1,\n    \"stepSize\":0.01,\n    \"takerFee\":0.08,\n    \"makerFee\":0.03,\n    \"marginBuy\": 0,\n    \"marginSell\": 0,\n    \"priceHighLimit\": 50000,\n    \"priceLowLimit\": 1000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/syncAdminApi/v1/symbols",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncAdminApi",
+						"v1",
+						"symbols"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Exchange places IPO Ask",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"price\":2000.00,\n    \"size\":1000,\n    \"userCookie\": 123,\n    \"action\": \"ASK\",\n    \"orderType\": \"GTC\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/syncTradeApi/v1/symbols/BTCUSD/trade/1/orders/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncTradeApi",
+						"v1",
+						"symbols",
+						"BTCUSD",
+						"trade",
+						"1",
+						"orders",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alice places GTC Bid on ICO, buys it out",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"price\":2000.00,\n    \"size\":999,\n    \"userCookie\": 123,\n    \"action\": \"BID\",\n    \"orderType\": \"GTC\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/syncTradeApi/v1/symbols/BTCUSD/trade/2/orders/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncTradeApi",
+						"v1",
+						"symbols",
+						"BTCUSD",
+						"trade",
+						"2",
+						"orders",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alice places GTC Ask",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"price\":2002.00,\n    \"size\":998,\n    \"userCookie\": 123,\n    \"action\": \"ASK\",\n    \"orderType\": \"GTC\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/syncTradeApi/v1/symbols/BTCUSD/trade/2/orders/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncTradeApi",
+						"v1",
+						"symbols",
+						"BTCUSD",
+						"trade",
+						"2",
+						"orders",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bob places GTC Bid",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"price\":2002,\n    \"size\":3,\n    \"userCookie\": 123,\n    \"action\": \"BID\",\n    \"orderType\": \"GTC\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/syncTradeApi/v1/symbols/BTCUSD/trade/3/orders/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncTradeApi",
+						"v1",
+						"symbols",
+						"BTCUSD",
+						"trade",
+						"3",
+						"orders",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get exchange user state",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/syncTradeApi/v1/users/1/state",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncTradeApi",
+						"v1",
+						"users",
+						"1",
+						"state"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get alice state",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/syncTradeApi/v1/users/2/state",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncTradeApi",
+						"v1",
+						"users",
+						"2",
+						"state"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get candle chart",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/syncTradeApi/v1/symbols/BTCUSD/bars/M15",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncTradeApi",
+						"v1",
+						"symbols",
+						"BTCUSD",
+						"bars",
+						"M15"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/syncTradeApi/v1/ping",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncTradeApi",
+						"v1",
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/syncTradeApi/v1/info",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncTradeApi",
+						"v1",
+						"info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "orderbook",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/syncTradeApi/v1/symbols/BTCUSD/orderbook?depth=100",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncTradeApi",
+						"v1",
+						"symbols",
+						"BTCUSD",
+						"orderbook"
+					],
+					"query": [
+						{
+							"key": "depth",
+							"value": "100",
+							"description": "not sure yet"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "move order",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"price\":90\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/syncTradeApi/v1/symbols/BTCUSD/trade/1234/orders/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"syncTradeApi",
+						"v1",
+						"symbols",
+						"BTCUSD",
+						"trade",
+						"1234",
+						"orders",
+						"5"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
