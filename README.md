@@ -23,3 +23,10 @@ Traders will be given varying levels of market share, to account for different l
 
 * Java 1.8
 * Python 3.8
+* mvn
+
+# Building
+`cd exchange-core`
+`mvn install`
+`cd exchange-gateway-rest`
+`mvn install`
