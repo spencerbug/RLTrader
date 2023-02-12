@@ -11,6 +11,10 @@ numpy = "*"
 matplotlib = "*"
 sklearn = "*"
 pandas = "*"
+torch = "*"
+numpy-ringbuffer = "*"
+ta-lib = "*"
+bintrees = "*"
 
 [dev-packages]
 
