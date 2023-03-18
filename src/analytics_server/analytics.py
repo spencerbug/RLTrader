@@ -6,18 +6,12 @@ from time import time
 import requests
 import numpy as np
 from numpy import nan as NaN
-from numpy import inf
 from numbers import Number as NumberType
 from numpy_ringbuffer import RingBuffer
 from talib import stream as tastream
 import talib
-from bintrees import AVLTree
 
 
-
-def get_order_book():
-    resp=requests.get("localhost:8080/syncTradeApi/v1/symbols/BTCUSD/orderbook?depth=100")
-    return resp.json()
 
 class CircularBuffer:
     def __init__(self, size=100):

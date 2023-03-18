@@ -15,6 +15,9 @@ torch = "*"
 numpy-ringbuffer = "*"
 ta-lib = "*"
 bintrees = "*"
+zmq = "*"
+keras = "*"
+tensorflow = "*"
 
 [dev-packages]
 
